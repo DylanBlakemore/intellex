@@ -6,18 +6,19 @@ defmodule Hexling.Config do
   @doc """
   Returns the API secret key
   """
-  @spec api_key() :: String.t()
-  def api_key(), do: Application.get_env(:hexling, :api_key) || ""
+  @spec open_ai_secret() :: String.t()
+  def open_ai_secret(), do: Application.get_env(:hexling, :open_ai_secret) || ""
 
   @doc """
   Returns the API organization key
   """
-  @spec organization_key() :: String.t()
-  def organization_key(), do: Application.get_env(:hexling, :organization_key) || ""
+  @spec open_ai_org_key() :: String.t()
+  def open_ai_org_key(), do: Application.get_env(:hexling, :open_ai_org_key) || ""
 
   @doc """
   Returns the API base URL
   """
-  @spec api_base_url() :: String.t()
-  def api_base_url(), do: Application.get_env(:hexling, :api_base_url) || "https://api.openai.com"
+  @spec open_ai_base_url() :: String.t()
+  def open_ai_base_url(),
+    do: Application.get_env(:hexling, :open_ai_base_url) || "https://api.openai.com"
 end

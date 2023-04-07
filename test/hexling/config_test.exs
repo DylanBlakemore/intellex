@@ -5,18 +5,18 @@ defmodule Hexling.ConfigTest do
 
   @application :hexling
 
-  test "api key" do
-    Application.put_env(@application, :api_key, "test_api_key")
-    assert Config.api_key() == "test_api_key"
+  test "open ai api key" do
+    Application.put_env(@application, :open_ai_secret, "test_api_key")
+    assert Config.open_ai_secret() == "test_api_key"
   end
 
   test "organization key" do
-    Application.put_env(@application, :organization_key, "test_org")
-    assert Config.organization_key() == "test_org"
+    Application.put_env(@application, :open_ai_org_key, "test_org")
+    assert Config.open_ai_org_key() == "test_org"
   end
 
   test "api base url" do
-    Application.put_env(@application, :api_base_url, "8082")
-    assert Config.api_base_url() == "8082"
+    Application.put_env(@application, :open_ai_base_url, "8082")
+    assert Config.open_ai_base_url() == "8082"
   end
 end

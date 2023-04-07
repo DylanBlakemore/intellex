@@ -1,4 +1,4 @@
-defmodule Hexling.OpenAi.Client do
+defmodule Hexling.Clients.OpenAI do
   @moduledoc """
   The OpenAI Client module provides a simple interface for making requests to the OpenAI API.
   """
@@ -39,7 +39,7 @@ defmodule Hexling.OpenAi.Client do
   end
 
   defp build_path(path) do
-    Config.api_base_url() <> path
+    Config.open_ai_base_url() <> path
   end
 
   defp handle_response({:ok, response}), do: {:ok, Response.new!(response)}
@@ -54,11 +54,11 @@ defmodule Hexling.OpenAi.Client do
   defp default_headers(), do: [{"Content-type", "application/json"}]
 
   defp add_api_key_headers(headers) do
-    [{"Authorization", "Bearer #{Config.api_key()}"} | headers]
+    [{"Authorization", "Bearer #{Config.open_ai_secret()}"} | headers]
   end
 
   defp add_organization_key_headers(headers) do
-    case Config.organization_key() do
+    case Config.open_ai_org_key() do
       "" -> headers
       org_key -> [{"OpenAI-Organization", org_key} | headers]
     end

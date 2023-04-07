@@ -3,23 +3,27 @@ defmodule Hexling.Config do
   The Hexling.Config module provides a simple interface for loading and accessing configuration data.
   """
 
-  @openai_url "https://api.openai.com"
-
   @doc """
-  Returns the OpenAI secret key
+  Returns the API secret key
   """
   @spec api_key() :: String.t()
-  def api_key(), do: Application.get_env(:hexling, :api_key)
+  def api_key(), do: Application.get_env(:hexling, :api_key) || ""
 
   @doc """
-  Returns the OpenAI organization key
+  Returns the API organization key
   """
   @spec organization_key() :: String.t()
-  def organization_key(), do: Application.get_env(:hexling, :organization_key)
+  def organization_key(), do: Application.get_env(:hexling, :organization_key) || ""
 
   @doc """
-  Returns the OpenAI API URL
+  Returns the headers to use when calling the API
   """
-  @spec openai_url() :: String.t()
-  def openai_url(), do: @openai_url
+  @spec headers() :: keyword()
+  def headers(), do: Application.get_env(:hexling, :headers) || []
+
+  @doc """
+  Returns the API base URL
+  """
+  @spec api_base_url() :: String.t()
+  def api_base_url(), do: Application.get_env(:hexling, :api_base_url) || "https://api.openai.com"
 end

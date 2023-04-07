@@ -15,7 +15,13 @@ defmodule Hexling.ConfigTest do
     assert Config.organization_key() == "test_org"
   end
 
-  test "openai url" do
-    assert Config.openai_url() == "https://api.openai.com"
+  test "headers" do
+    Application.put_env(@application, :headers, ContentType: "application/json")
+    assert Config.headers() == [ContentType: "application/json"]
+  end
+
+  test "api base url" do
+    Application.put_env(@application, :api_base_url, "8082")
+    assert Config.api_base_url() == "8082"
   end
 end

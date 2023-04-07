@@ -16,12 +16,6 @@ defmodule Hexling.Config do
   def organization_key(), do: Application.get_env(:hexling, :organization_key) || ""
 
   @doc """
-  Returns the headers to use when calling the API
-  """
-  @spec headers() :: keyword()
-  def headers(), do: Application.get_env(:hexling, :headers) || []
-
-  @doc """
   Returns the API base URL
   """
   @spec api_base_url() :: String.t()

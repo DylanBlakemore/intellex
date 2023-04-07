@@ -24,6 +24,13 @@ defmodule Hexling.MockController do
     end
   end
 
+  post "/tests" do
+    case conn.params do
+      %{"name" => "Test 1"} -> success(conn, %{id: 1, name: "Test 1"})
+      _ -> failure(conn)
+    end
+  end
+
   defp success(conn, body) do
     conn
     |> Plug.Conn.send_resp(:ok, Jason.encode!(body))

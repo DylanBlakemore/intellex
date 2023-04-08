@@ -1,66 +1,82 @@
 defmodule Hexling.LLMs.OpenAI do
   @moduledoc """
-  The OpenAI Client module provides a simple interface for making requests to the OpenAI API.
+  OpenAI's LLM
   """
-  alias Hexling.Config
-  alias Hexling.Http.{Response, Error}
+
+  @behaviour Hexling.LLMs.LLM
+
+  alias Hexling.Chain
+  alias Hexling.Model
+  alias Hexling.Generation
+  alias Hexling.Usage
+  alias Hexling.Responses.{ChatResponse, CompletionResponse}
 
   @doc """
-  Makes a GET request to the OpenAI API
+  Result of a chat generation
   """
-  @spec get(String.t()) :: {:ok, Response.t()} | {:error, Error.t()}
-  def get(path) do
-    path
-    |> build_path()
-    |> HTTPoison.get(headers())
-    |> handle_response()
-  end
-
-  @doc """
-  Makes a PUT request to the OpenAI API
-  """
-  @spec put(String.t(), map()) :: {:ok, Response.t()} | {:error, Error.t()}
-  def put(path, body) do
-    path
-    |> build_path()
-    |> HTTPoison.put(Jason.encode!(body), headers())
-    |> handle_response()
+  @spec chat(Model.t(), Chain.t()) :: {:ok, Generation.t()} | {:error, any()}
+  def chat(model, chain) do
+    OpenAI.chat_completion(
+      model: model.id,
+      prompt: Chain.to_prompt(chain),
+      max_tokens: model.max_tokens,
+      temperature: model.temperature
+    )
+    |> format()
   end
 
   @doc """
-  Makes a POST request to the OpenAI API
+  Result of a completion generation
   """
-  @spec post(String.t(), map()) :: {:ok, Response.t()} | {:error, Error.t()}
-  def post(path, body) do
-    path
-    |> build_path()
-    |> HTTPoison.post(Jason.encode!(body), headers())
-    |> handle_response()
+  @spec completion(Model.t(), String.t()) :: {:ok, Generation.t()} | {:error, any()}
+  def completion(model, prompt) do
+    OpenAI.completions(
+      model: model.id,
+      prompt: prompt,
+      max_tokens: model.max_tokens,
+      temperature: model.temperature
+    )
+    |> format()
   end
 
-  defp build_path(path) do
-    Config.open_ai_base_url() <> path
+  defp format(result, type, response_format) do
+    usage = %Usage{
+      completion_tokens: result.completion_tokens,
+      response_tokens: result.response_tokens,
+      total_tokens: result.total_tokens
+    }
+
+    data = result.choices |> Enum.map(fn choice -> response_format.(choice) end)
+
+    {:ok,
+     %Generation{
+       data: data,
+       usage: usage,
+       type: type,
+       model: result.model
+     }}
   end
 
-  defp handle_response({:ok, response}), do: {:ok, Response.new!(response)}
-  defp handle_response({:error, error}), do: {:error, Error.new!(error)}
+  defp format({:error, error}), do: {:error, error}
 
-  defp headers() do
-    default_headers()
-    |> add_api_key_headers()
-    |> add_organization_key_headers()
+  defp format({:ok, %{object: "chat.completion"} = result}) do
+    format(result, :chat, fn choice ->
+      %ChatResponse{
+        index: choice.index,
+        content: choice.message.content,
+        role: choice.message.role,
+        finish_reason: choice.finish_reason
+      }
+    end)
   end
 
-  defp default_headers(), do: [{"Content-type", "application/json"}]
-
-  defp add_api_key_headers(headers) do
-    [{"Authorization", "Bearer #{Config.open_ai_secret()}"} | headers]
-  end
-
-  defp add_organization_key_headers(headers) do
-    case Config.open_ai_org_key() do
-      "" -> headers
-      org_key -> [{"OpenAI-Organization", org_key} | headers]
-    end
+  defp format({:ok, %{object: "completion"} = result}) do
+    format(result, :completion, fn choice ->
+      %CompletionResponse{
+        index: choice.index,
+        text: choice.text,
+        finish_reason: choice.finish_reason
+      }
+    end)
   end
 end

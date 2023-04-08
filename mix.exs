@@ -30,10 +30,11 @@ defmodule Hexling.MixProject do
   defp deps do
     [
       {:jason, "~> 1.4"},
-      {:httpoison, "~> 2.1.0"},
+      {:httpoison, "~> 1.8"},
       {:ex_doc, ">= 0.29.4", only: :dev},
       {:plug, "~> 1.12", only: :test},
-      {:plug_cowboy, "~> 2.5", only: :test}
+      {:plug_cowboy, "~> 2.5", only: :test},
+      {:openai, "~> 0.4.1"}
     ]
   end
 end

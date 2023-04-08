@@ -1,4 +1,4 @@
-defmodule Hexling.Clients.OpenAI do
+defmodule Hexling.LLMs.OpenAI do
   @moduledoc """
   The OpenAI Client module provides a simple interface for making requests to the OpenAI API.
   """

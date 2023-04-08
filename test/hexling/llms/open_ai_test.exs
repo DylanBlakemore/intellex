@@ -1,7 +1,7 @@
-defmodule Hexling.Clients.OpenAITest do
+defmodule Hexling.LLMs.OpenAITest do
   use ExUnit.Case
 
-  alias Hexling.Clients.OpenAI
+  alias Hexling.LLMs.OpenAI
 
   test "get" do
     Application.put_env(:hexling, :open_ai_base_url, "http://localhost:8082")

@@ -1,9 +1,9 @@
-defmodule Hexling.MixProject do
+defmodule Intellex.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :hexling,
+      app: :intellex,
       version: "0.0.1",
       elixir: "~> 1.14",
       start_permanent: Mix.env() == :prod,
@@ -23,7 +23,7 @@ defmodule Hexling.MixProject do
   defp elixirc_paths(:test), do: ["lib", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
 
-  defp mods(:test), do: [Hexling.MockServer]
+  defp mods(:test), do: [Intellex.MockServer]
   defp mods(_), do: []
 
   # Run "mix help deps" to learn about dependencies.

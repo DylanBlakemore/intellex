@@ -1,9 +1,9 @@
-defmodule Hexling.MockServer do
+defmodule Intellex.MockServer do
   @moduledoc """
   A mock server used for testing.
   """
   use GenServer
-  alias Hexling.MockController
+  alias Intellex.MockController
 
   @spec init(any()) :: {:ok, any()}
   def init(args) do

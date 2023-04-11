@@ -1,2 +1,2 @@
-defmodule HexlingTest do
+defmodule IntellexTest do
 end

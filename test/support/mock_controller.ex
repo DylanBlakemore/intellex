@@ -1,4 +1,4 @@
-defmodule Hexling.MockController do
+defmodule Intellex.MockController do
   use Plug.Router
 
   plug(Plug.Parsers,

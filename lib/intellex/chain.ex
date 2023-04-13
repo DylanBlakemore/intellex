@@ -28,6 +28,9 @@ defmodule Intellex.Chain do
   @doc """
   Converts a chain to a prompt
   """
-  @spec to_prompt(t()) :: list(map())
-  def to_prompt(chain), do: chain.messages
+  @spec prompt(t()) :: list(map())
+  def prompt(chain) do
+    chain.messages
+    |> Enum.map(&Message.prompt/1)
+  end
 end

@@ -4,18 +4,23 @@ defmodule Intellex.MessageTest do
   alias Intellex.Message
 
   test "human" do
-    assert %Message{type: "human", content: "Hello"} = Message.human("Hello")
+    assert %Message{role: "human", content: "Hello"} = Message.human("Hello")
   end
 
-  test "ai" do
-    assert %Message{type: "ai", content: "Hello"} = Message.ai("Hello")
+  test "assistant" do
+    assert %Message{role: "assistant", content: "Hello"} = Message.assistant("Hello")
   end
 
   test "system" do
-    assert %Message{type: "system", content: "Hello"} = Message.system("Hello")
+    assert %Message{role: "system", content: "Hello"} = Message.system("Hello")
   end
 
   test "chat" do
-    assert %Message{type: "chat", content: "Hello"} = Message.chat("Hello")
+    assert %Message{role: "chat", content: "Hello"} = Message.chat("Hello")
+  end
+
+  test "prompt" do
+    message = Message.human("Hello")
+    assert %{"role" => "human", "text" => "Hello"} = Message.prompt(message)
   end
 end

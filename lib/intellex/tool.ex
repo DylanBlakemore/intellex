@@ -24,8 +24,12 @@ defmodule Intellex.Tool do
     %{tool | function: function}
   end
 
-  @spec option(%__MODULE__{}, %Intellex.Option{}) :: %__MODULE__{}
-  def option(tool, option) do
+  @spec option(%__MODULE__{}, %Intellex.Option{} | keyword()) :: %__MODULE__{}
+  def option(tool, %Intellex.Option{} = option) do
     %{tool | options: [option | tool.options]}
+  end
+
+  def option(tool, opts) do
+    option(tool, Intellex.Option.new!(opts))
   end
 end

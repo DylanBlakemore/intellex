@@ -25,7 +25,18 @@ defmodule Intellex.Action do
   end
 
   defp parse_options(string) do
+    case match_options(string) do
+      nil -> []
+      matches -> parse_options_matches(matches)
+    end
+  end
+
+  defp match_options(string) do
     Regex.run(~r/\[OPTIONS: (?<options>([a-zA-Z0-9_ ,:]+))\]/, string, capture: :all_but_first)
+  end
+
+  defp parse_options_matches(matches) do
+    matches
     |> List.first()
     |> String.split(", ")
     |> Enum.map(&parse_option/1)

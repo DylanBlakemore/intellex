@@ -20,7 +20,8 @@ defmodule Intellex.Action do
   end
 
   defp parse_tool(string) do
-    Regex.run(~r/\[TOOL: (?<tool>\w+)\]/, string, capture: :all_but_first)
+    string
+    |> capture(~r/\[TOOL: (?<tool>\w+)\]/)
     |> List.first()
   end
 
@@ -32,7 +33,12 @@ defmodule Intellex.Action do
   end
 
   defp match_options(string) do
-    Regex.run(~r/\[OPTIONS: (?<options>([a-zA-Z0-9_ ,:]+))\]/, string, capture: :all_but_first)
+    string
+    |> capture(~r/\[OPTIONS: (?<options>([a-zA-Z0-9_ ,:]+))\]/)
+  end
+
+  defp capture(string, regex) do
+    Regex.run(regex, string, capture: :all_but_first)
   end
 
   defp parse_options_matches(matches) do

@@ -2,7 +2,7 @@ defmodule Intellex.Option do
   @moduledoc """
   An option is a parameter which can be passed to a tool's run function
   """
-  defstruct [:name, :description, :type, :default, :optional]
+  defstruct [:name, :description]
 
   @type t :: %__MODULE__{}
 
@@ -17,10 +17,7 @@ defmodule Intellex.Option do
   def new!(opts) do
     %__MODULE__{
       name: opts[:name],
-      description: opts[:description],
-      type: opts[:type],
-      default: opts[:default],
-      optional: opts[:optional]
+      description: opts[:description]
     }
   end
 end

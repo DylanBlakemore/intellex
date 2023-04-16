@@ -7,6 +7,8 @@ defmodule Intellex.Action do
 
   @type t :: %__MODULE__{}
 
+  alias Intellex.{Message, ResponseParser}
+
   @doc """
   Parses a string into an action. The string takes the form
   '[TOOL: tool_name] [OPTIONS: option1: value1, option2: value2]'
@@ -14,42 +16,19 @@ defmodule Intellex.Action do
   @spec new!(String.t()) :: __MODULE__.t()
   def new!(string) do
     %__MODULE__{
-      tool: parse_tool(string),
-      options: parse_options(string)
+      tool: ResponseParser.parse_tool(string),
+      options: ResponseParser.parse_options(string)
     }
   end
 
-  defp parse_tool(string) do
-    string
-    |> capture(~r/\[TOOL: (?<tool>\w+)\]/)
-    |> List.first()
-  end
-
-  defp parse_options(string) do
-    case match_options(string) do
-      nil -> []
-      matches -> parse_options_matches(matches)
+  @spec run(t(), Intellex.Toolkit.t()) :: {atom(), Message.t()}
+  def run(action, toolkit) do
+    with {:ok, tool} <- Intellex.Toolkit.get_tool(toolkit, action.tool),
+         {:ok, tool} <- Intellex.Tool.validate(tool, action),
+         {:ok, result} <- Intellex.Tool.run(tool, action) do
+      {:ok, Message.human(result)}
+    else
+      {:error, error} -> {:error, Message.human(error)}
     end
-  end
-
-  defp match_options(string) do
-    string
-    |> capture(~r/\[OPTIONS: (?<options>([a-zA-Z0-9_ ,:]+))\]/)
-  end
-
-  defp capture(string, regex) do
-    Regex.run(regex, string, capture: :all_but_first)
-  end
-
-  defp parse_options_matches(matches) do
-    matches
-    |> List.first()
-    |> String.split(", ")
-    |> Enum.map(&parse_option/1)
-  end
-
-  defp parse_option(string) do
-    [name, value] = String.split(string, ": ")
-    {name, value}
   end
 end

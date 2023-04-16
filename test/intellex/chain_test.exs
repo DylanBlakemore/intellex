@@ -16,10 +16,10 @@ defmodule Intellex.ChainTest do
     assert %Chain{messages: @messages} = Chain.new!(@messages)
   end
 
-  test "add" do
+  test "link" do
     chain = Chain.new!(@messages)
     message = Message.assistant("I am a robot")
-    assert @messages ++ [message] == Chain.add(chain, message).messages
+    assert @messages ++ [message] == Chain.link(chain, message).messages
   end
 
   test "prompt" do

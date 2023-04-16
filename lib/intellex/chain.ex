@@ -20,8 +20,8 @@ defmodule Intellex.Chain do
   @doc """
   Adds a message to the chain
   """
-  @spec add(t(), Message.t()) :: t()
-  def add(chain, message) do
+  @spec link(t(), Message.t()) :: t()
+  def link(chain, message) do
     %__MODULE__{chain | messages: chain.messages ++ [message]}
   end
 

@@ -76,6 +76,12 @@ defmodule Intellex.Tool do
     end
   end
 
+  defp validate_option(tool, {name, _value}) do
+    Enum.any?(tool.options, fn option ->
+      option.name == name
+    end)
+  end
+
   @doc """
   Runs the tool's function with the action's options
   """
@@ -88,11 +94,5 @@ defmodule Intellex.Tool do
     rescue
       e in RuntimeError -> {:error, e.message}
     end
-  end
-
-  defp validate_option(tool, {name, _value}) do
-    Enum.any?(tool.options, fn option ->
-      option.name == name
-    end)
   end
 end

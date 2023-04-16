@@ -1,7 +1,7 @@
 defmodule Intellex.ActionTest do
   use ExUnit.Case
 
-  alias Intellex.Action
+  alias Intellex.{Action, Message}
 
   test "new! parses an action from a string" do
     assert %Action{
@@ -24,5 +24,40 @@ defmodule Intellex.ActionTest do
              Action.new!(
                "Some extra fluff that the LLM is definitely going to add because AIs be AIs'\n[TOOL: test_tool_1]. Maybe something on the end"
              )
+  end
+
+  describe "run" do
+    setup do
+      tools = [
+        %Intellex.Tool{
+          name: "hello",
+          description: "Says hello to someone",
+          options: [
+            %{
+              name: "name",
+              description: "The name of the person to say hello to"
+            }
+          ],
+          function: fn opts -> {:ok, "Hello #{opts["name"]}"} end
+        }
+      ]
+
+      %{tools: tools}
+    end
+
+    test "when everything works correctly", %{tools: tools} do
+      result =
+        Action.run(
+          %Action{
+            tool: "hello",
+            options: [
+              {"name", "world"}
+            ]
+          },
+          %Intellex.Toolkit{tools: tools}
+        )
+
+      assert {:ok, %Message{content: "Hello world", role: "human"}} = result
+    end
   end
 end

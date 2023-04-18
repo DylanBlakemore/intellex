@@ -15,10 +15,15 @@ defmodule Intellex.Action do
   """
   @spec new!(String.t()) :: __MODULE__.t()
   def new!(string) do
-    %__MODULE__{
-      tool: Parser.parse_tool(string),
-      options: Parser.parse_options(string)
-    }
+    with {:ok, tool} <- Parser.parse_tool(string),
+         {:ok, options} <- Parser.parse_options(string) do
+      %__MODULE__{
+        tool: tool,
+        options: options
+      }
+    else
+      {:error, error} -> {:error, error}
+    end
   end
 
   @doc """

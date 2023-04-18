@@ -3,6 +3,13 @@ defmodule Intellex.Parser do
   @tool_regex ~r/\[TOOL: (?<tool>\w+)\]/
   @options_regex ~r/\[OPTIONS: (?<options>([a-zA-Z0-9_ ,:]+))\]/
 
+  @doc """
+  Extracts the status from the LLM response.
+
+  Example:
+  iex> Intellex.Parser.parse_status("[STATUS: Incomplete] [TOOL: tool] [OPTIONS: option1: description1, option2: description2]")
+  {:ok, "Incomplete"}
+  """
   @spec parse_status(String.t()) :: {:ok, String.t()} | {:error, String.t()}
   def parse_status(content) do
     case Regex.run(@status_regex, content) do
@@ -11,33 +18,31 @@ defmodule Intellex.Parser do
     end
   end
 
-  @spec parse_tool(String.t()) :: String.t()
-  def parse_tool(string) do
-    string
-    |> capture(@tool_regex)
-    |> List.first()
-  end
+  @doc """
+  Extracts the tool from the LLM response.
 
-  @spec parse_options(String.t()) :: list()
-  def parse_options(string) do
-    case match_options(string) do
-      nil -> []
-      matches -> parse_options_matches(matches)
+  Example:
+  iex> Intellex.Parser.parse_tool("[STATUS: Incomplete] [TOOL: tool] [OPTIONS: option1: description1, option2: description2]")
+  {:ok, "tool"}
+  """
+  @spec parse_tool(String.t()) :: {:ok, String.t()} | {:error, String.t()}
+  def parse_tool(string) do
+    case Regex.run(@tool_regex, string) do
+      [_, tool] -> {:ok, tool}
+      _ -> {:error, "Unknown response format"}
     end
   end
 
-  defp match_options(string) do
-    string
-    |> capture(@options_regex)
+  @spec parse_options(String.t()) :: {:ok, list()} | {:error, String.t()}
+  def parse_options(string) do
+    case Regex.run(@options_regex, string, capture: :all_but_first) do
+      [_, options] -> {:ok, parse_options_string(options)}
+      _ -> {:ok, []}
+    end
   end
 
-  defp capture(string, regex) do
-    Regex.run(regex, string, capture: :all_but_first)
-  end
-
-  defp parse_options_matches(matches) do
-    matches
-    |> List.first()
+  defp parse_options_string(options) do
+    options
     |> String.split(", ")
     |> Enum.map(&parse_option/1)
   end

@@ -13,6 +13,9 @@ defmodule Intellex.Option do
     end
   end
 
+  @doc """
+  Creates a new option
+  """
   @spec new!(keyword()) :: %__MODULE__{}
   def new!(opts) do
     %__MODULE__{

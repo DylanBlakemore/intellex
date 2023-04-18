@@ -1,10 +1,16 @@
 defmodule Intellex.Agent do
+  @moduledoc """
+  The Agent module is responsible for managing the state of the conversation with the LLM
+  """
   defstruct [:uuid, :chain, :toolkit, :system, :prompt]
 
   alias Intellex.{Action, Chain, LLM, Message, Parser}
 
   @type t :: %__MODULE__{}
 
+  @doc """
+  Creates a new agent
+  """
   @spec new(keyword()) :: {:ok, %__MODULE__{}}
   def new(opts) do
     {:ok,
@@ -33,6 +39,9 @@ defmodule Intellex.Agent do
     %__MODULE__{agent | chain: Chain.link(agent.chain, message)}
   end
 
+  @doc """
+  Runs the agent until completion
+  """
   @spec run(t()) :: {atom(), String.t()}
   def run(agent) do
     with {:ok, response} <- chat(agent) do

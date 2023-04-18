@@ -1,8 +1,9 @@
-defmodule Intellex.ResponseParser do
+defmodule Intellex.Parser do
   @status_regex ~r/\[STATUS: (?<status>\w+)\]/
   @tool_regex ~r/\[TOOL: (?<tool>\w+)\]/
   @options_regex ~r/\[OPTIONS: (?<options>([a-zA-Z0-9_ ,:]+))\]/
 
+  @spec parse_status(String.t()) :: {:ok, String.t()} | {:error, String.t()}
   def parse_status(content) do
     case Regex.run(@status_regex, content) do
       [_, status] -> {:ok, status}
@@ -10,12 +11,14 @@ defmodule Intellex.ResponseParser do
     end
   end
 
+  @spec parse_tool(String.t()) :: String.t()
   def parse_tool(string) do
     string
     |> capture(@tool_regex)
     |> List.first()
   end
 
+  @spec parse_options(String.t()) :: list()
   def parse_options(string) do
     case match_options(string) do
       nil -> []

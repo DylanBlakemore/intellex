@@ -1,7 +1,7 @@
 defmodule Intellex.Agent do
-  defstruct [:uuid, :chain, :toolkit, :llm]
+  defstruct [:uuid, :chain, :toolkit, :system, :prompt]
 
-  alias Intellex.{Action, Chain, Message, ResponseHandler}
+  alias Intellex.{Action, Chain, LLM, Message, Parser}
 
   @type t :: %__MODULE__{}
 
@@ -11,15 +11,16 @@ defmodule Intellex.Agent do
      %__MODULE__{
        uuid: opts[:uuid] || generate_uuid(),
        chain: init_chain(opts),
-       toolkit: opts[:toolkit],
-       llm: opts[:llm]
+       system: opts[:system],
+       prompt: opts[:prompt],
+       toolkit: opts[:toolkit]
      }}
   end
 
   defp init_chain(opts) do
     Chain.new!()
     |> Chain.link(Message.system(opts[:system]))
-    |> Chain.link(Message.human(opts[:human]))
+    |> Chain.link(Message.user(opts[:prompt]))
   end
 
   defp generate_uuid do
@@ -28,7 +29,7 @@ defmodule Intellex.Agent do
   end
 
   @spec link(t(), Message.t()) :: t()
-  def link(agent, message) do
+  defp link(agent, message) do
     %__MODULE__{agent | chain: Chain.link(agent.chain, message)}
   end
 
@@ -44,17 +45,20 @@ defmodule Intellex.Agent do
   end
 
   defp respond(agent) do
-    case ResponseHandler.handle_response(agent.chain.messages |> List.last()) do
-      {:action, message} -> handle_action(agent, message)
-      {:complete, message} -> {:complete, message}
-      {:failed, message} -> {:failed, message}
-      {:error, error} -> {:error, handle_error(agent, error)}
+    message = List.last(agent.chain.messages)
+
+    case Parser.parse_status(message.content) do
+      {:ok, "Incomplete"} -> handle_action(agent, message)
+      {:ok, "Complete"} -> {:ok, message}
+      {:ok, "Failed"} -> {:error, message}
+      {:ok, status} -> handle_error(agent, "Unknown status: #{status}")
+      {:error, _} -> handle_error(agent, "Unknown response format")
     end
   end
 
   defp handle_error(agent, error) do
     agent
-    |> link(Message.human(error))
+    |> link(Message.user(error))
     |> run()
   end
 
@@ -70,6 +74,6 @@ defmodule Intellex.Agent do
   end
 
   defp chat(agent) do
-    agent.llm.chat(agent.chain)
+    LLM.chat(agent.chain)
   end
 end

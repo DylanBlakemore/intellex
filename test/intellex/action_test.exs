@@ -57,7 +57,7 @@ defmodule Intellex.ActionTest do
           %Intellex.Toolkit{tools: tools}
         )
 
-      assert {:ok, %Message{content: "Hello world", role: "human"}} = result
+      assert {:ok, %Message{content: "Hello world", role: "user"}} = result
     end
   end
 end

@@ -7,7 +7,7 @@ defmodule Intellex.Action do
 
   @type t :: %__MODULE__{}
 
-  alias Intellex.{Message, ResponseParser}
+  alias Intellex.{Message, Parser}
 
   @doc """
   Parses a string into an action. The string takes the form
@@ -16,19 +16,22 @@ defmodule Intellex.Action do
   @spec new!(String.t()) :: __MODULE__.t()
   def new!(string) do
     %__MODULE__{
-      tool: ResponseParser.parse_tool(string),
-      options: ResponseParser.parse_options(string)
+      tool: Parser.parse_tool(string),
+      options: Parser.parse_options(string)
     }
   end
 
+  @doc """
+  Runs an action using the given toolkit
+  """
   @spec run(t(), Intellex.Toolkit.t()) :: {atom(), Message.t()}
   def run(action, toolkit) do
     with {:ok, tool} <- Intellex.Toolkit.get_tool(toolkit, action.tool),
          {:ok, tool} <- Intellex.Tool.validate(tool, action),
          {:ok, result} <- Intellex.Tool.run(tool, action) do
-      {:ok, Message.human(result)}
+      {:ok, Message.user(result)}
     else
-      {:error, error} -> {:error, Message.human(error)}
+      {:error, error} -> {:error, Message.user(error)}
     end
   end
 end

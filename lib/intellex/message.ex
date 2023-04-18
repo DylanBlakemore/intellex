@@ -8,11 +8,11 @@ defmodule Intellex.Message do
   @type t :: %__MODULE__{}
 
   @doc """
-  A message sent by a human using the tool
+  A message sent by a user using the tool
   """
-  @spec human(String.t()) :: t()
-  def human(content) do
-    %__MODULE__{role: "human", content: content}
+  @spec user(String.t()) :: t()
+  def user(content) do
+    %__MODULE__{role: "user", content: content}
   end
 
   @doc """

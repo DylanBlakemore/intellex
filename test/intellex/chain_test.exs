@@ -5,7 +5,7 @@ defmodule Intellex.ChainTest do
 
   @messages [
     Message.system("You are a useful assistant"),
-    Message.human("Hello, how are you?")
+    Message.user("Hello, how are you?")
   ]
 
   test "new!/1" do
@@ -27,7 +27,7 @@ defmodule Intellex.ChainTest do
 
     assert [
              %{"role" => "system", "text" => "You are a useful assistant"},
-             %{"role" => "human", "text" => "Hello, how are you?"}
+             %{"role" => "user", "text" => "Hello, how are you?"}
            ] == Chain.prompt(chain)
   end
 end

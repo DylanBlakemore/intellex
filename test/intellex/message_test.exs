@@ -3,8 +3,8 @@ defmodule Intellex.MessageTest do
 
   alias Intellex.Message
 
-  test "human" do
-    assert %Message{role: "human", content: "Hello"} = Message.human("Hello")
+  test "user" do
+    assert %Message{role: "user", content: "Hello"} = Message.user("Hello")
   end
 
   test "assistant" do
@@ -20,7 +20,7 @@ defmodule Intellex.MessageTest do
   end
 
   test "prompt" do
-    message = Message.human("Hello")
-    assert %{"role" => "human", "text" => "Hello"} = Message.prompt(message)
+    message = Message.user("Hello")
+    assert %{"role" => "user", "text" => "Hello"} = Message.prompt(message)
   end
 end
